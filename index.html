@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRAVURE — Le marché des créateurs CNC & décoration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --graphite:#17181A;
+    --graphite-2:#1F2124;
+    --paper:#EFEAE0;
+    --paper-dim:#D9D2C2;
+    --copper:#C97D4B;
+    --copper-soft:#E3B48C;
+    --blueprint:#5C82A3;
+    --walnut:#7A4E30;
+    --line:rgba(239,234,224,0.14);
+    --ok:#8FAF8A;
+    --err:#C97D7D;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--graphite);color:var(--paper);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.display{font-family:'Fraunces',serif;font-weight:500;letter-spacing:-0.01em;margin:0;}
+  .mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 32px;}
+  @media(max-width:640px){.wrap{padding:0 20px;}}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}}
+  button{font-family:inherit;}
+  input,select,textarea{
+    font-family:'Manrope',sans-serif; font-size:14px;
+    background:var(--graphite); color:var(--paper);
+    border:1px solid var(--line); border-radius:var(--radius);
+    padding:12px 14px; width:100%; outline:none;
+    transition:border-color .2s;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--copper);}
+  label{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--paper-dim); display:block; margin-bottom:8px;}
+  .field{margin-bottom:18px;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:520px){.field-row{grid-template-columns:1fr;}}
+
+  /* ---------- Header ---------- */
+  header{position:sticky; top:0; z-index:50; background:rgba(23,24,26,0.88); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  .nav{display:flex; align-items:center; justify-content:space-between; height:76px; gap:20px;}
+  .logo{font-family:'Fraunces',serif; font-size:22px; font-weight:600; display:flex; align-items:center; gap:10px;}
+  .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--copper);box-shadow:0 0 0 3px rgba(201,125,75,0.2);}
+  nav.links{display:flex; gap:36px; align-items:center;}
+  nav.links a{font-size:13px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.08em; color:var(--paper-dim); position:relative; padding-bottom:4px; transition:color .2s;}
+  nav.links a:hover{color:var(--paper);}
+  nav.links a::after{content:'';position:absolute; left:0; bottom:0; height:1px; width:0; background:var(--copper); transition:width .25s ease;}
+  nav.links a:hover::after{width:100%;}
+  .btn{font-family:'IBM Plex Mono',monospace; font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; padding:12px 22px; border:1px solid var(--copper); color:var(--copper); border-radius:var(--radius); display:inline-flex; align-items:center; gap:8px; transition:background .2s, color .2s, transform .2s; cursor:pointer; background:transparent;}
+  .btn:hover{background:var(--copper); color:var(--graphite); transform:translateY(-1px);}
+  .btn.solid{background:var(--copper); color:var(--graphite);}
+  .btn.solid:hover{background:var(--copper-soft); border-color:var(--copper-soft);}
+  .btn.ghost{border-color:var(--line); color:var(--paper);}
+  .btn.ghost:hover{border-color:var(--paper); background:transparent; color:var(--paper);}
+  .btn.block{width:100%; justify-content:center;}
+  .btn[disabled]{opacity:0.4; cursor:not-allowed; pointer-events:none;}
+  .header-actions{display:flex; gap:14px; align-items:center;}
+  .cart-btn{position:relative; display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid var(--line); border-radius:var(--radius); cursor:pointer; background:transparent; color:var(--paper); transition:border-color .2s;}
+  .cart-btn:hover{border-color:var(--copper);}
+  .cart-badge{position:absolute; top:-7px; right:-7px; background:var(--copper); color:var(--graphite); font-family:'IBM Plex Mono',monospace; font-size:10px; min-width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0 4px;}
+  .burger{display:none;}
+  @media(max-width:900px){nav.links{display:none;} .burger{display:block;}}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative; padding:96px 0 60px; overflow:hidden; border-bottom:1px solid var(--line);}
+  .hero-grid{display:grid; grid-template-columns:1.05fr 0.95fr; gap:60px; align-items:center;}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr; gap:40px;}}
+  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.14em; color:var(--copper); display:flex; align-items:center; gap:10px; margin-bottom:22px;}
+  .eyebrow::before{content:'';width:26px;height:1px;background:var(--copper);}
+  .hero h1{font-size:clamp(38px,5.4vw,64px); line-height:1.04; color:var(--paper);}
+  .hero h1 em{font-style:italic; color:var(--copper-soft);}
+  .hero p.lead{margin-top:24px; font-size:17px; line-height:1.65; color:var(--paper-dim); max-width:480px;}
+  .hero-actions{margin-top:36px; display:flex; gap:16px; flex-wrap:wrap;}
+  .hero-stats{margin-top:52px; display:flex; gap:40px; flex-wrap:wrap;}
+  .hero-stats div{border-left:1px solid var(--line); padding-left:16px;}
+  .hero-stats .num{font-family:'Fraunces',serif; font-size:26px; color:var(--copper-soft);}
+  .hero-stats .lbl{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--paper-dim); text-transform:uppercase; letter-spacing:0.06em;}
+  .hero-art{position:relative; aspect-ratio:1/1; max-width:520px; margin:0 auto;}
+  .hero-art svg{width:100%; height:100%;}
+  .toolpath{fill:none; stroke:var(--blueprint); stroke-width:1.4; stroke-dasharray:4 5; stroke-linecap:round; opacity:0.9;}
+  .cutline{fill:none; stroke:var(--copper); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1400; stroke-dashoffset:1400; animation:draw 3.2s ease forwards 0.4s;}
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .rosace-fill{fill:var(--walnut); opacity:0; animation:fadeIn 1.2s ease forwards 3.4s;}
+  @keyframes fadeIn{ to{opacity:0.9;} }
+  .crosshair{stroke:var(--paper-dim); stroke-width:0.6; opacity:0.35;}
+  .coord{font-family:'IBM Plex Mono',monospace; font-size:9px; fill:var(--paper-dim); opacity:0.5;}
+
+  /* ---------- Section ---------- */
+  .section{padding:100px 0;}
+  .section.tight{padding:80px 0;}
+  .sec-head{display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:56px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:28px;}
+  .sec-head .eyebrow{margin-bottom:12px;}
+  .sec-head h2{font-size:clamp(28px,3.4vw,40px); color:var(--paper);}
+  .sec-head p{color:var(--paper-dim); max-width:380px; font-size:14.5px; line-height:1.6;}
+
+  /* ---------- Categories ---------- */
+  .cat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  @media(max-width:900px){.cat-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.cat-grid{grid-template-columns:1fr;}}
+  .cat-card{background:var(--graphite); padding:34px 28px; min-height:190px; display:flex; flex-direction:column; justify-content:space-between; transition:background .3s; position:relative; overflow:hidden;}
+  .cat-card:hover{background:var(--graphite-2);}
+  .cat-card .idx{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--copper); letter-spacing:0.08em;}
+  .cat-card h3{font-size:21px; margin-top:20px; color:var(--paper);}
+  .cat-card .n{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--paper-dim); margin-top:8px;}
+  .cat-card svg{position:absolute; right:-10px; bottom:-10px; width:96px; height:96px; stroke:var(--line); fill:none; stroke-width:1; transition:stroke .3s, transform .5s;}
+  .cat-card:hover svg{stroke:var(--copper); transform:rotate(12deg) scale(1.05);}
+
+  /* ---------- Steps ---------- */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:0;}
+  @media(max-width:800px){.steps{grid-template-columns:1fr; gap:40px;}}
+  .step{padding:0 28px; position:relative;}
+  .step:first-child{padding-left:0;}
+  .step:not(:last-child)::after{content:''; position:absolute; top:20px; right:-1px; height:1px; width:56px; background:repeating-linear-gradient(90deg,var(--copper) 0 6px, transparent 6px 11px);}
+  @media(max-width:800px){.step:not(:last-child)::after{display:none;}}
+  .step .num{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--copper); border:1px solid var(--copper); width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+  .step h3{margin-top:22px; font-size:20px; color:var(--paper);}
+  .step p{margin-top:12px; color:var(--paper-dim); font-size:14.5px; line-height:1.65;}
+
+  /* ---------- Products ---------- */
+  .prod-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px;}
+  @media(max-width:1000px){.prod-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.prod-grid{grid-template-columns:1fr;}}
+  .prod-card{background:var(--graphite-2); border:1px solid var(--line); display:flex; flex-direction:column; transition:border-color .25s, transform .25s;}
+  .prod-card:hover{border-color:var(--copper); transform:translateY(-4px);}
+  .prod-thumb{aspect-ratio:4/3; position:relative; overflow:hidden; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:center;}
+  .prod-thumb svg{width:70%; height:70%;}
+  .prod-tag{position:absolute; top:10px; left:10px; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--graphite); background:var(--copper-soft); padding:4px 8px;}
+  .prod-body{padding:18px 18px 20px;}
+  .prod-body .maker{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--paper-dim); text-transform:uppercase; letter-spacing:0.05em;}
+  .prod-body h3{font-size:16.5px; margin-top:8px; color:var(--paper); font-weight:500;}
+  .prod-foot{display:flex; justify-content:space-between; align-items:center; margin-top:16px;}
+  .price{font-family:'Fraunces',serif; font-size:19px; color:var(--copper-soft);}
+  .price small{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--paper-dim);}
+  .add{width:32px; height:32px; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; transition:border-color .2s, background .2s; font-size:16px; color:var(--paper); cursor:pointer; background:transparent;}
+  .add:hover{border-color:var(--copper); background:var(--copper); color:var(--graphite);}
+  .add.added{background:var(--ok); border-color:var(--ok); color:var(--graphite);}
+
+  /* ---------- Sur-mesure ---------- */
+  .custom-wrap{display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:start;}
+  @media(max-width:900px){.custom-wrap{grid-template-columns:1fr;}}
+  .custom-info h2{font-size:clamp(26px,3vw,36px);}
+  .custom-info p{color:var(--paper-dim); margin-top:18px; font-size:15px; line-height:1.7; max-width:420px;}
+  .custom-points{list-style:none; margin:28px 0 0; padding:0; display:flex; flex-direction:column; gap:16px;}
+  .custom-points li{display:flex; gap:14px; align-items:flex-start;}
+  .custom-points .n{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--copper); border:1px solid var(--copper); border-radius:50%; width:26px; height:26px; min-width:26px; display:flex; align-items:center; justify-content:center;}
+  .custom-points span{font-size:13.5px; color:var(--paper-dim); line-height:1.6; padding-top:3px;}
+  .custom-form{background:var(--graphite-2); border:1px solid var(--line); padding:36px;}
+  @media(max-width:520px){.custom-form{padding:24px;}}
+  .form-note{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--paper-dim); margin-top:-6px; margin-bottom:22px;}
+  .success-panel{display:none; text-align:center; padding:40px 20px;}
+  .success-panel.show{display:block;}
+  .success-panel .mark{width:52px; height:52px; border-radius:50%; background:var(--ok); color:var(--graphite); display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:24px;}
+  .success-panel h3{font-size:20px; color:var(--paper);}
+  .success-panel p{color:var(--paper-dim); font-size:14px; margin-top:10px; line-height:1.6;}
+  .success-panel .ref{font-family:'IBM Plex Mono',monospace; color:var(--copper-soft); margin-top:14px; font-size:13px;}
+
+  /* ---------- Seller CTA ---------- */
+  .seller{background:var(--paper); color:var(--graphite); border-radius:var(--radius); padding:64px 56px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center; position:relative; overflow:hidden;}
+  @media(max-width:800px){.seller{grid-template-columns:1fr; padding:44px 28px;}}
+  .seller h2{font-size:clamp(26px,3vw,36px); color:var(--graphite);}
+  .seller p{color:#4A4438; margin-top:16px; font-size:15px; line-height:1.65; max-width:440px;}
+  .seller .btn.solid{background:var(--graphite); color:var(--paper); border-color:var(--graphite);}
+  .seller .btn.solid:hover{background:#2c2e31;}
+  .seller-list{list-style:none; margin:26px 0 0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .seller-list li{display:flex; gap:10px; align-items:flex-start; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#4A4438;}
+  .seller-list li::before{content:'—'; color:var(--copper);}
+  .seller-visual{aspect-ratio:1; display:flex; align-items:center; justify-content:center;}
+  .seller-visual svg{width:100%; height:100%;}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line); padding:56px 0 32px;}
+  .foot-grid{display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:40px;}
+  @media(max-width:800px){.foot-grid{grid-template-columns:1fr 1fr;}}
+  .foot-grid h4{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--paper-dim); margin-bottom:16px;}
+  .foot-grid ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .foot-grid a{font-size:14px; color:var(--paper); opacity:0.85; transition:opacity .2s;}
+  .foot-grid a:hover{opacity:1; color:var(--copper-soft);}
+  .foot-bottom{margin-top:48px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--paper-dim);}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ---------- Cart drawer ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(10,10,10,0.55); opacity:0; pointer-events:none; transition:opacity .3s; z-index:90;}
+  .overlay.open{opacity:1; pointer-events:auto;}
+  .drawer{position:fixed; top:0; right:0; height:100%; width:420px; max-width:92vw; background:var(--graphite-2); border-left:1px solid var(--line); z-index:95; transform:translateX(100%); transition:transform .35s ease; display:flex; flex-direction:column;}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{display:flex; align-items:center; justify-content:space-between; padding:22px 24px; border-bottom:1px solid var(--line);}
+  .drawer-head h3{font-size:19px;}
+  .drawer-close{background:none; border:none; color:var(--paper); font-size:22px; cursor:pointer; line-height:1; padding:4px;}
+  .drawer-body{flex:1; overflow-y:auto; padding:20px 24px;}
+  .cart-empty{text-align:center; color:var(--paper-dim); font-size:13.5px; padding:60px 10px;}
+  .cart-item{display:flex; gap:14px; padding:16px 0; border-bottom:1px solid var(--line);}
+  .cart-item .thumb{width:56px; height:56px; background:var(--graphite); border:1px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .cart-item .thumb svg{width:60%; height:60%; stroke:var(--copper); fill:none; stroke-width:1.5;}
+  .cart-item .info{flex:1; min-width:0;}
+  .cart-item .name{font-size:13.5px; color:var(--paper);}
+  .cart-item .unit{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--paper-dim); margin-top:4px;}
+  .qty-ctrl{display:flex; align-items:center; gap:10px; margin-top:10px;}
+  .qty-ctrl button{width:22px; height:22px; border:1px solid var(--line); background:none; color:var(--paper); cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center;}
+  .qty-ctrl button:hover{border-color:var(--copper);}
+  .qty-ctrl .qn{font-family:'IBM Plex Mono',monospace; font-size:12.5px; min-width:16px; text-align:center;}
+  .item-remove{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--paper-dim); background:none; border:none; cursor:pointer; text-decoration:underline; padding:0; margin-left:auto;}
+  .item-remove:hover{color:var(--err);}
+  .item-total{font-family:'Fraunces',serif; color:var(--copper-soft); font-size:14.5px; white-space:nowrap;}
+
+  .drawer-foot{border-top:1px solid var(--line); padding:20px 24px 26px;}
+  .sub-row{display:flex; justify-content:space-between; margin-bottom:6px; font-size:13.5px; color:var(--paper-dim);}
+  .total-row{display:flex; justify-content:space-between; margin:14px 0 20px; font-family:'Fraunces',serif; font-size:20px; color:var(--paper);}
+  .total-row span:last-child{color:var(--copper-soft);}
+
+  .checkout-form{display:none;}
+  .checkout-form.show{display:block;}
+  .back-link{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--paper-dim); background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:18px;}
+  .back-link:hover{color:var(--copper-soft);}
+  .cart-list-view.hide, .cart-foot-default.hide{display:none;}
+
+  .wa-note{display:flex; gap:10px; align-items:flex-start; font-size:12px; color:var(--paper-dim); background:var(--graphite); border:1px solid var(--line); padding:12px 14px; margin-top:14px; line-height:1.5;}
+  .wa-note b{color:var(--copper-soft);}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- ===== CART DRAWER ===== -->
+<aside class="drawer" id="drawer" aria-label="Panier">
+  <div class="drawer-head">
+    <h3>Panier <span id="drawerCount" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--paper-dim);"></span></h3>
+    <button class="drawer-close" id="drawerClose">×</button>
+  </div>
+  <div class="drawer-body">
+    <div id="cartListView" class="cart-list-view"></div>
+
+    <div class="checkout-form" id="checkoutForm">
+      <button class="back-link" id="backToCart">← Retour au panier</button>
+      <div class="field">
+        <label>Nom complet</label>
+        <input type="text" id="custName" placeholder="Votre nom">
+      </div>
+      <div class="field">
+        <label>Téléphone</label>
+        <input type="tel" id="custPhone" placeholder="05 xx xx xx xx">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Wilaya</label>
+          <input type="text" id="custWilaya" placeholder="ex. Sétif">
+        </div>
+        <div class="field">
+          <label>Commune</label>
+          <input type="text" id="custCommune" placeholder="ex. El Eulma">
+        </div>
+      </div>
+      <div class="field">
+        <label>Adresse de livraison</label>
+        <textarea id="custAddress" rows="2" placeholder="Rue, immeuble, repère..."></textarea>
+      </div>
+      <div class="wa-note">
+        <span>↳</span>
+        <span>Votre commande sera envoyée par <b>WhatsApp</b> à l'atelier concerné, qui vous confirmera le prix final et le délai de livraison.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-foot">
+    <div class="cart-foot-default" id="cartFootDefault">
+      <div class="sub-row"><span>Sous-total</span><span id="subtotalVal">0 DA</span></div>
+      <div class="sub-row"><span>Livraison</span><span>Calculée par l'atelier</span></div>
+      <button class="btn solid block" id="goCheckout" disabled>Passer la commande</button>
+    </div>
+    <div id="checkoutFootBtn" style="display:none;">
+      <div class="total-row"><span>Total</span><span id="checkoutTotal">0 DA</span></div>
+      <button class="btn solid block" id="sendWhatsapp">Envoyer la commande via WhatsApp</button>
+    </div>
+  </div>
+</aside>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo"><span class="dot"></span>GRAVURE</div>
+    <nav class="links">
+      <a href="#categories">Catégories</a>
+      <a href="#comment">Comment ça marche</a>
+      <a href="#produits">Créations</a>
+      <a href="#sur-mesure">Sur mesure</a>
+      <a href="#vendre">Vendre</a>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" id="cartOpen">
+        Panier <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+      </button>
+      <a href="#vendre" class="btn solid" style="display:none;" id="sellCta">Ouvrir un atelier</a>
+    </div>
+    <div class="burger mono" style="font-size:12px;">MENU</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Marché des créateurs CNC</div>
+      <h1>La précision d'une machine, <em>l'âme</em> d'un atelier.</h1>
+      <p class="lead">GRAVURE réunit des ateliers CNC indépendants et des amateurs de décoration sur mesure — panneaux ajourés, luminaires, mobilier et objets gravés, fabriqués à la demande près de chez vous.</p>
+      <div class="hero-actions">
+        <a href="#produits" class="btn solid">Découvrir les créations</a>
+        <a href="#sur-mesure" class="btn ghost">Demander un modèle sur mesure</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="num">240+</div><div class="lbl">Ateliers actifs</div></div>
+        <div><div class="num">3 800</div><div class="lbl">Pièces livrées</div></div>
+        <div><div class="num">48 h</div><div class="lbl">Délai moyen</div></div>
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <svg viewBox="0 0 400 400">
+        <circle class="crosshair" cx="200" cy="200" r="180" stroke-dasharray="2 6"/>
+        <line class="crosshair" x1="200" y1="10" x2="200" y2="390"/>
+        <line class="crosshair" x1="10" y1="200" x2="390" y2="200"/>
+        <text class="coord" x="205" y="24">X 000.0</text>
+        <text class="coord" x="300" y="204">Y 118.4</text>
+        <path class="toolpath" d="M200,60 A140,140 0 0 1 340,200 A140,140 0 0 1 200,340 A140,140 0 0 1 60,200 A140,140 0 0 1 200,60 Z"/>
+        <path class="rosace-fill" d="M200,90 C230,90 260,120 260,150 C260,180 230,200 200,200 C170,200 140,180 140,150 C140,120 170,90 200,90 Z
+          M200,200 C230,200 260,220 260,250 C260,280 230,310 200,310 C170,310 140,280 140,250 C140,220 170,200 200,200 Z
+          M90,200 C90,170 120,140 150,140 C180,140 200,170 200,200 C200,230 180,260 150,260 C120,260 90,230 90,200 Z
+          M200,200 C200,170 220,140 250,140 C280,140 310,170 310,200 C310,230 280,260 250,260 C220,260 200,230 200,200 Z"/>
+        <path class="cutline" d="M200,90 C230,90 260,120 260,150 C260,180 230,200 200,200 C170,200 140,180 140,150 C140,120 170,90 200,90 Z
+          M200,200 C230,200 260,220 260,250 C260,280 230,310 200,310 C170,310 140,280 140,250 C140,220 170,200 200,200 Z
+          M90,200 C90,170 120,140 150,140 C180,140 200,170 200,200 C200,230 180,260 150,260 C120,260 90,230 90,200 Z
+          M200,200 C200,170 220,140 250,140 C280,140 310,170 310,200 C310,230 280,260 250,260 C220,260 200,230 200,200 Z
+          M200,200 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="section tight" id="categories">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><div class="eyebrow">Catalogue</div><h2>Six familles de pièces, un seul fichier de découpe.</h2></div>
+      <p>Chaque catégorie regroupe des modèles prêts à commander ou personnalisables aux dimensions de votre intérieur.</p>
+    </div>
+    <div class="cat-grid reveal">
+      <a href="#produits" class="cat-card"><div class="idx">01 / Murale</div><h3>Décoration murale</h3><div class="n">312 modèles</div><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35"/><circle cx="50" cy="50" r="20"/></svg></a>
+      <a href="#produits" class="cat-card"><div class="idx">02 / Lumière</div><h3>Luminaires ajourés</h3><div class="n">148 modèles</div><svg viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg></a>
+      <a href="#produits" class="cat-card"><div class="idx">03 / Mobilier</div><h3>Mobilier sur mesure</h3><div class="n">96 modèles</div><svg viewBox="0 0 100 100"><rect x="15" y="15" width="70" height="70"/></svg></a>
+      <a href="#produits" class="cat-card"><div class="idx">04 / Signes</div><h3>Signalétique & enseignes</h3><div class="n">204 modèles</div><svg viewBox="0 0 100 100"><line x1="10" y1="30" x2="90" y2="30"/><line x1="10" y1="50" x2="90" y2="50"/><line x1="10" y1="70" x2="90" y2="70"/></svg></a>
+      <a href="#produits" class="cat-card"><div class="idx">05 / Objets</div><h3>Objets décoratifs</h3><div class="n">176 modèles</div><svg viewBox="0 0 100 100"><path d="M50 15 L85 85 L15 85 Z"/></svg></a>
+      <a href="#sur-mesure" class="cat-card"><div class="idx">06 / Cadeaux</div><h3>Pièces personnalisées</h3><div class="n">Sur devis</div><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38"/><line x1="50" y1="12" x2="50" y2="88"/><line x1="12" y1="50" x2="88" y2="50"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="comment">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><div class="eyebrow">Processus</div><h2>Du fichier vectoriel à l'objet livré.</h2></div>
+      <p>Trois étapes, du choix du modèle à la réception, sans jamais toucher une machine vous-même.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="num">01</div><h3>Choisissez ou personnalisez</h3><p>Parcourez les modèles des ateliers ou envoyez vos propres dimensions, essence de bois et finitions.</p></div>
+      <div class="step"><div class="num">02</div><h3>L'atelier usine la pièce</h3><p>Un atelier CNC proche de chez vous découpe, ponce et finit votre commande à partir du fichier validé.</p></div>
+      <div class="step"><div class="num">03</div><h3>Livraison à votre porte</h3><p>Confirmation par WhatsApp, suivi de fabrication, puis livraison protégée directement chez vous.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section tight" id="produits">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><div class="eyebrow">Sélection</div><h2>Créations récemment mises en ligne.</h2></div>
+      <p>Pièces uniques ou petites séries, fabriquées à la commande par nos ateliers partenaires.</p>
+    </div>
+
+    <div class="prod-grid reveal">
+      <div class="prod-card">
+        <div class="prod-thumb"><span class="prod-tag">Bois massif</span>
+          <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="#7A4E30" stroke-width="1.4"/><circle cx="50" cy="50" r="12" fill="none" stroke="#7A4E30" stroke-width="1.4"/><line x1="50" y1="20" x2="50" y2="10" stroke="#7A4E30" stroke-width="1.4"/><line x1="50" y1="90" x2="50" y2="80" stroke="#7A4E30" stroke-width="1.4"/><line x1="20" y1="50" x2="10" y2="50" stroke="#7A4E30" stroke-width="1.4"/><line x1="90" y1="50" x2="80" y2="50" stroke="#7A4E30" stroke-width="1.4"/></svg></div>
+        <div class="prod-body">
+          <div class="maker">Atelier Cèdre — Sétif</div>
+          <h3>Panneau mural Mandala Ø 60 cm</h3>
+          <div class="prod-foot"><div class="price">4 500 <small>DA</small></div>
+            <button class="add" data-id="p1" data-name="Panneau mural Mandala Ø 60 cm" data-maker="Atelier Cèdre — Sétif" data-price="4500">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-thumb"><span class="prod-tag">MDF laqué</span>
+          <svg viewBox="0 0 100 100"><polygon points="50,15 82,35 82,68 50,88 18,68 18,35" fill="none" stroke="#5C82A3" stroke-width="1.4"/><polygon points="50,32 68,44 68,60 50,72 32,60 32,44" fill="none" stroke="#5C82A3" stroke-width="1.4"/></svg></div>
+        <div class="prod-body">
+          <div class="maker">Atelier Zellige Wood</div>
+          <h3>Suspension géométrique hexagonale</h3>
+          <div class="prod-foot"><div class="price">6 200 <small>DA</small></div>
+            <button class="add" data-id="p2" data-name="Suspension géométrique hexagonale" data-maker="Atelier Zellige Wood" data-price="6200">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-thumb"><span class="prod-tag">Métal découpé</span>
+          <svg viewBox="0 0 100 100"><path d="M20 80 L20 30 L50 15 L80 30 L80 80 Z" fill="none" stroke="#C97D4B" stroke-width="1.4"/><line x1="20" y1="55" x2="80" y2="55" stroke="#C97D4B" stroke-width="1.4"/></svg></div>
+        <div class="prod-body">
+          <div class="maker">Ferronnerie Numérique</div>
+          <h3>Étagère murale silhouette maison</h3>
+          <div class="prod-foot"><div class="price">3 900 <small>DA</small></div>
+            <button class="add" data-id="p3" data-name="Étagère murale silhouette maison" data-maker="Ferronnerie Numérique" data-price="3900">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-thumb"><span class="prod-tag">Noyer massif</span>
+          <svg viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" fill="none" stroke="#7A4E30" stroke-width="1.4"/><rect x="35" y="35" width="30" height="30" fill="none" stroke="#7A4E30" stroke-width="1.4"/></svg></div>
+        <div class="prod-body">
+          <div class="maker">Atelier Cèdre — Sétif</div>
+          <h3>Porte-nom calligraphié sur mesure</h3>
+          <div class="prod-foot"><div class="price">2 300 <small>DA</small></div>
+            <button class="add" data-id="p4" data-name="Porte-nom calligraphié sur mesure" data-maker="Atelier Cèdre — Sétif" data-price="2300">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SUR MESURE ===== -->
+<section class="section" id="sur-mesure">
+  <div class="wrap">
+    <div class="custom-wrap reveal">
+      <div class="custom-info">
+        <div class="eyebrow">Sur devis</div>
+        <h2>Un modèle qui n'existe pas encore ? Décrivez-le.</h2>
+        <p>Envoyez vos dimensions, votre matériau préféré et une référence visuelle : l'atelier vous répond avec un prix et un délai, avant toute fabrication.</p>
+        <ul class="custom-points">
+          <li><span class="n">1</span><span>Décrivez le projet, le style et l'usage prévu de la pièce.</span></li>
+          <li><span class="n">2</span><span>Indiquez dimensions, matériau et finition souhaités.</span></li>
+          <li><span class="n">3</span><span>Un atelier confirme le devis et le délai par WhatsApp sous 24 h.</span></li>
+        </ul>
+      </div>
+
+      <div class="custom-form">
+        <div id="customFormFields">
+          <div class="field-row">
+            <div class="field"><label>Nom complet</label><input type="text" id="cfName" placeholder="Votre nom"></div>
+            <div class="field"><label>Téléphone</label><input type="tel" id="cfPhone" placeholder="05 xx xx xx xx"></div>
+          </div>
+          <div class="field">
+            <label>Décrivez votre projet</label>
+            <textarea id="cfDesc" rows="3" placeholder="Ex. Panneau décoratif pour salon, motif floral, à suspendre..."></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Dimensions souhaitées</label><input type="text" id="cfDim" placeholder="ex. 80 x 60 cm"></div>
+            <div class="field">
+              <label>Matériau</label>
+              <select id="cfMaterial">
+                <option>Bois (Rouge,Blanc)</option>
+                <option>Bois noble (noyer, chêne)</option>
+                <option>MDF laqué</option>
+                <option>Métal</option>
+                <option>Je ne sais pas encore</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              
+              </select>
+            </div>
+            <div class="field"><label>Délai souhaité</label><input type="text" id="cfDelay" placeholder="ex. avant le 20 août"></div>
+          </div>
+          <div class="form-note">Vous pourrez joindre une image de référence directement dans la discussion WhatsApp.</div>
+          <button class="btn solid block" id="cfSubmit">Envoyer ma demande via WhatsApp</button>
+        </div>
+
+        <div class="success-panel" id="cfSuccess">
+          <div class="mark">✓</div>
+          <h3>Demande préparée</h3>
+          <p>WhatsApp va s'ouvrir avec le récapitulatif de votre projet, prêt à être envoyé à l'atelier.</p>
+          <div class="ref" id="cfRef"></div>
+          <button class="btn ghost" style="margin-top:22px;" id="cfReset">Faire une nouvelle demande</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section tight" id="vendre">
+  <div class="wrap">
+    <div class="seller reveal">
+      <div>
+        <div class="eyebrow" style="color:#7A4E30;">Pour les ateliers</div>
+        <h2>Vous avez une machine CNC ? Transformez-la en vitrine.</h2>
+        <p>Publiez vos modèles, fixez vos prix et recevez des commandes de particuliers dans votre région — GRAVURE gère la mise en relation et le suivi.</p>
+        <ul class="seller-list">
+          <li>Commission unique de 9 %, sans abonnement</li>
+          <li>Fichiers de découpe hébergés et protégés</li>
+          <li>Commandes reçues directement sur votre WhatsApp</li>
+        </ul>
+        <div style="margin-top:32px;"><a href="#" class="btn solid">Créer ma vitrine d'atelier</a></div>
+      </div>
+      <div class="seller-visual">
+        <svg viewBox="0 0 300 300">
+          <rect x="30" y="30" width="240" height="240" fill="none" stroke="#7A4E30" stroke-width="1" stroke-dasharray="3 5"/>
+          <path d="M150,60 L230,105 L230,195 L150,240 L70,195 L70,105 Z" fill="none" stroke="#C97D4B" stroke-width="2"/>
+          <path d="M150,105 L195,130 L195,180 L150,205 L105,180 L105,130 Z" fill="none" stroke="#7A4E30" stroke-width="1.4"/>
+          <circle cx="150" cy="150" r="14" fill="#C97D4B" opacity="0.85"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="font-size:19px;"><span class="dot"></span>GRAVURE</div>
+        <p style="color:var(--paper-dim); font-size:13.5px; margin-top:16px; max-width:280px; line-height:1.6;">Le marché algérien des ateliers CNC et de la décoration fabriquée sur mesure.</p>
+      </div>
+      <div><h4>Catalogue</h4><ul><li><a href="#categories">Décoration murale</a></li><li><a href="#categories">Luminaires</a></li><li><a href="#categories">Mobilier</a></li><li><a href="#sur-mesure">Sur mesure</a></li></ul></div>
+      <div><h4>Ateliers</h4><ul><li><a href="#vendre">Devenir vendeur</a></li><li><a href="#comment">Comment ça marche</a></li><li><a href="#">Tarifs & commissions</a></li></ul></div>
+      <div><h4>Support</h4><ul><li><a href="#">Suivi de commande</a></li><li><a href="#">Livraison</a></li><li><a href="#">Contact</a></li></ul></div>
+    </div>
+    <div class="foot-bottom"><span>© 2026 GRAVURE — Marché des créateurs CNC</span><span>Sétif · Alger · Oran · Constantine</span></div>
+  </div>
+</footer>
+
+<script>
+  // ====== CONFIG — à modifier avant publication ======
+  const WHATSAPP_NUMBER = "213794752450"; // remplacez par le numéro WhatsApp de la boutique/atelier, format international sans le +
+
+  // ====== Reveal on scroll ======
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  // ====== Cart state (en mémoire) ======
+  let cart = []; // {id, name, maker, price, qty}
+
+  const overlay = document.getElementById('overlay');
+  const drawer = document.getElementById('drawer');
+  const cartListView = document.getElementById('cartListView');
+  const checkoutFormEl = document.getElementById('checkoutForm');
+  const cartFootDefault = document.getElementById('cartFootDefault');
+  const checkoutFootBtn = document.getElementById('checkoutFootBtn');
+  const goCheckoutBtn = document.getElementById('goCheckout');
+  const cartBadge = document.getElementById('cartBadge');
+  const subtotalVal = document.getElementById('subtotalVal');
+  const checkoutTotal = document.getElementById('checkoutTotal');
+
+  function fmt(n){ return n.toLocaleString('fr-FR') + ' DA'; }
+
+  function openDrawer(){ overlay.classList.add('open'); drawer.classList.add('open'); }
+  function closeDrawer(){ overlay.classList.remove('open'); drawer.classList.remove('open'); showCartView(); }
+
+  document.getElementById('cartOpen').addEventListener('click', openDrawer);
+  document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  function addToCart(id, name, maker, price){
+    const existing = cart.find(i=>i.id===id);
+    if(existing){ existing.qty += 1; }
+    else{ cart.push({id, name, maker, price, qty:1}); }
+    renderCart();
+    openDrawer();
+  }
+
+  function changeQty(id, delta){
+    const item = cart.find(i=>i.id===id);
+    if(!item) return;
+    item.qty += delta;
+    if(item.qty <= 0){ cart = cart.filter(i=>i.id!==id); }
+    renderCart();
+  }
+
+  function removeItem(id){
+    cart = cart.filter(i=>i.id!==id);
+    renderCart();
+  }
+
+  function renderCart(){
+    const count = cart.reduce((s,i)=>s+i.qty,0);
+    cartBadge.style.display = count>0 ? 'flex' : 'none';
+    cartBadge.textContent = count;
+    document.getElementById('drawerCount').textContent = count>0 ? '('+count+')' : '';
+
+    if(cart.length===0){
+      cartListView.innerHTML = '<div class="cart-empty">Votre panier est vide.<br>Ajoutez une création pour commencer.</div>';
+      goCheckoutBtn.disabled = true;
+    } else {
+      goCheckoutBtn.disabled = false;
+      cartListView.innerHTML = cart.map(item=>`
+        <div class="cart-item">
+          <div class="thumb"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg></div>
+          <div class="info">
+            <div class="name">${item.name}</div>
+            <div class="unit">${item.maker} · ${fmt(item.price)}</div>
+            <div class="qty-ctrl">
+              <button onclick="changeQty('${item.id}',-1)">−</button>
+              <span class="qn">${item.qty}</span>
+              <button onclick="changeQty('${item.id}',1)">+</button>
+              <button class="item-remove" onclick="removeItem('${item.id}')">retirer</button>
+            </div>
+          </div>
+          <div class="item-total">${fmt(item.price*item.qty)}</div>
+        </div>
+      `).join('');
+    }
+
+    const subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+    subtotalVal.textContent = fmt(subtotal);
+    checkoutTotal.textContent = fmt(subtotal);
+  }
+
+  window.changeQty = changeQty;
+  window.removeItem = removeItem;
+
+  document.querySelectorAll('.add').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      addToCart(btn.dataset.id, btn.dataset.name, btn.dataset.maker, parseInt(btn.dataset.price,10));
+      btn.classList.add('added');
+      btn.textContent = '✓';
+      setTimeout(()=>{ btn.classList.remove('added'); btn.textContent='+'; }, 900);
+    });
+  });
+
+  function showCartView(){
+    cartListView.style.display = 'block';
+    checkoutFormEl.classList.remove('show');
+    cartFootDefault.style.display = 'block';
+    checkoutFootBtn.style.display = 'none';
+  }
+  function showCheckoutView(){
+    cartListView.style.display = 'none';
+    checkoutFormEl.classList.add('show');
+    cartFootDefault.style.display = 'none';
+    checkoutFootBtn.style.display = 'block';
+  }
+
+  goCheckoutBtn.addEventListener('click', ()=>{ if(cart.length>0) showCheckoutView(); });
+  document.getElementById('backToCart').addEventListener('click', showCartView);
+
+  document.getElementById('sendWhatsapp').addEventListener('click', ()=>{
+    const name = document.getElementById('custName').value.trim();
+    const phone = document.getElementById('custPhone').value.trim();
+    const wilaya = document.getElementById('custWilaya').value.trim();
+    const commune = document.getElementById('custCommune').value.trim();
+    const address = document.getElementById('custAddress').value.trim();
+
+    if(!name || !phone || !address){
+      alert('Merci de renseigner au moins votre nom, téléphone et adresse de livraison.');
+      return;
+    }
+
+    const subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+    let msg = `Nouvelle commande GRAVURE\n\n`;
+    cart.forEach(i=>{ msg += `• ${i.name} x${i.qty} — ${fmt(i.price*i.qty)}\n`; });
+    msg += `\nTotal: ${fmt(subtotal)}\n\n`;
+    msg += `Client: ${name}\nTéléphone: ${phone}\nWilaya/Commune: ${wilaya} / ${commune}\nAdresse: ${address}`;
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  });
+
+  // ====== Formulaire sur-mesure ======
+  document.getElementById('cfSubmit').addEventListener('click', ()=>{
+    const name = document.getElementById('cfName').value.trim();
+    const phone = document.getElementById('cfPhone').value.trim();
+    const desc = document.getElementById('cfDesc').value.trim();
+    const dim = document.getElementById('cfDim').value.trim();
+    const material = document.getElementById('cfMaterial').value;
+   
+    const delay = document.getElementById('cfDelay').value.trim();
+
+    if(!name || !phone || !desc){
+      alert('Merci de renseigner au moins votre nom, téléphone et une description du projet.');
+      return;
+    }
+
+    const ref = 'SM-' + Math.floor(100000 + Math.random()*900000);
+    let msg = `Demande de modèle sur mesure — GRAVURE\nRéférence: ${ref}\n\n`;
+    msg += `Client: ${name}\nTéléphone: ${phone}\n\n`;
+    msg += `Description: ${desc}\n`;
+    if(dim) msg += `Dimensions: ${dim}\n`;
+    msg += `Matériau: ${material}\n`;
+    msg += `Budget indicatif: ${budget}\n`;
+    if(delay) msg += `Délai souhaité: ${delay}\n`;
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+
+    document.getElementById('customFormFields').style.display = 'none';
+    document.getElementById('cfSuccess').classList.add('show');
+    document.getElementById('cfRef').textContent = 'Référence : ' + ref;
+  });
+
+  document.getElementById('cfReset').addEventListener('click', ()=>{
+    document.getElementById('customFormFields').style.display = 'block';
+    document.getElementById('cfSuccess').classList.remove('show');
+    ['cfName','cfPhone','cfDesc','cfDim','cfDelay'].forEach(id=>document.getElementById(id).value='');
+  });
+
+  renderCart();
+</script>
+
+</body>
+</html>
